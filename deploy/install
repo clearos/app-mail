@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -x /etc/rc.d/init.d/slapd ] && /sbin/service slapd condrestart >/dev/null 2>&1
+
+# Initialize domain name with default
+#------------------------------------
+
+/usr/clearos/apps/mail/deploy/initialize
