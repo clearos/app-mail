@@ -16,6 +16,7 @@ The Mail app is a very simple library that handles core mail parameters for othe
 Summary: Mail Library - Core
 Requires: app-base-core
 Requires: app-network-core
+Requires: app-openldap-core => 1:1.1.4
 
 %description core
 The Mail app is a very simple library that handles core mail parameters for other mail apps.

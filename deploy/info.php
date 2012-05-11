@@ -28,8 +28,10 @@ $app['menu_enabled'] = FALSE;
 
 $app['core_only'] = TRUE;
 
+// FIXME:'app-openldap-core => 1:1.1.4 should be handled some other way... maybe
 $app['core_requires'] = array(
     'app-network-core',
+    'app-openldap-core => 1:1.1.4',
 );
 
 $app['requires'] = array(
