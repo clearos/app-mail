@@ -6,3 +6,8 @@
 #------------------------------------
 
 /usr/clearos/apps/mail/deploy/initialize
+
+# FIXME: need to pull in LDAP schema change
+/sbin/service slapd condrestart >/dev/null 2>&1
+
+exit 0
