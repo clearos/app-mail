@@ -143,6 +143,13 @@ class Base_Mail extends Engine
 
         if ($this->ldaph->exists($dn))
             $this->ldaph->modify($dn, $ldap_object);
+
+        // FIXME: just temporary.  Postfix update
+        if (clearos_app_installed('smtp')) {
+            clearos_load_library('smtp/Postfix');
+            $postfix = new \clearos\apps\smtp\Postfix();
+            $postfix->set_domain($domain);
+        }
     }
 
     /**
