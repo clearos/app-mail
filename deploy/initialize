@@ -60,6 +60,7 @@ clearos_load_library('network/Domain');
 $domain = new Domain();
 $default = $domain->get_default();
 
+// FIXME: handle LDAP offline mode better
 if (! empty($default)) {
     $mail = new Base_Mail();
     $mail->set_domain($default);
