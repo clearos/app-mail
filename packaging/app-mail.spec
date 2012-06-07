@@ -1,7 +1,7 @@
 
 Name: app-mail
 Epoch: 1
-Version: 1.1.4
+Version: 1.1.6
 Release: 1%{dist}
 Summary: Mail Library - Core
 License: LGPLv3
