@@ -206,7 +206,7 @@ class Base_Mail extends Engine
      * Returns base mail domain.
      *
      * @return string domain SID
-     * @throws Engine_Exception, Samba_Not_Initialized_Exception
+     * @throws Engine_Exception
      */
 
     public function get_domain()
