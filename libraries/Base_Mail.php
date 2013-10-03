@@ -72,13 +72,11 @@ use \clearos\apps\base\Engine as Engine;
 use \clearos\apps\groups\Group_Engine as Group_Engine;
 use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\openldap\LDAP_Driver as LDAP_Driver;
-use \clearos\apps\openldap_directory\OpenLDAP as OpenLDAP;
 
 clearos_load_library('base/Engine');
 clearos_load_library('groups/Group_Engine');
 clearos_load_library('network/Network_Utils');
 clearos_load_library('openldap/LDAP_Driver');
-clearos_load_library('openldap_directory/OpenLDAP');
 
 // Exceptions
 //-----------
@@ -156,7 +154,8 @@ class Base_Mail extends Engine
 
         $ldap_object['clearMasterMailDomain'] = $domain;
 
-        $dn = OpenLDAP::get_master_dn();
+        $ldap_driver = new LDAP_Driver();
+        $dn = $ldap_driver->get_master_dn();
 
         if ($this->ldaph->exists($dn))
             $this->ldaph->modify($dn, $ldap_object);
@@ -216,7 +215,8 @@ class Base_Mail extends Engine
         if ($this->ldaph === NULL)
             $this->_get_ldap_handle();
 
-        $dn = OpenLDAP::get_master_dn();
+        $ldap_driver = new LDAP_Driver();
+        $dn = $ldap_driver->get_master_dn();
         
         $attributes = $this->ldaph->read($dn);
 
