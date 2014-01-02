@@ -5,7 +5,7 @@
 # Initialize domain name with default
 #------------------------------------
 
-/usr/clearos/apps/mail/deploy/initialize
+/usr/clearos/apps/mail/deploy/initialize >/dev/null 2>&1
 
 # FIXME: need to pull in LDAP schema change
 /sbin/service slapd condrestart >/dev/null 2>&1
