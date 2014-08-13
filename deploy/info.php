@@ -20,17 +20,24 @@ $app['description'] = lang('mail_app_description');
 $app['name'] = lang('mail_app_name');
 $app['category'] = lang('base_category_system');
 $app['subcategory'] = lang('base_subcategory_settings');
-$app['menu_enabled'] = FALSE;
+
+/////////////////////////////////////////////////////////////////////////////
+// Controllers
+/////////////////////////////////////////////////////////////////////////////
+
+$app['controllers']['mail']['title'] = $app['name'];
+$app['controllers']['domain']['title'] = lang('mail_mail_domain');
+$app['controllers']['policy']['title'] = lang('base_app_policy');
 
 /////////////////////////////////////////////////////////////////////////////
 // Packaging
 /////////////////////////////////////////////////////////////////////////////
 
-$app['core_only'] = TRUE;
-
 // FIXME:'app-openldap-core => 1:1.1.4 should be handled some other way... maybe
 $app['core_requires'] = array(
+    'app-accounts',
     'app-network-core',
+    'app-smtp-core >= 1:1.1.3',
     'app-openldap-core => 1:1.1.4',
 );
 
