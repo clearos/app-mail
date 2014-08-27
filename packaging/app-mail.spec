@@ -3,30 +3,23 @@ Name: app-mail
 Epoch: 1
 Version: 1.5.5
 Release: 1%{dist}
-Summary: Mail Settings
-License: GPLv3
-Group: ClearOS/Apps
-Source: %{name}-%{version}.tar.gz
-Buildarch: noarch
-Requires: %{name}-core = 1:%{version}-%{release}
-Requires: app-base
-Requires: app-network
-
-%description
-The Mail Settings app provides the necessary tools to manage core mail functionality.
-
-%package core
-Summary: Mail Settings - Core
+Summary: Mail Library - Core
 License: LGPLv3
 Group: ClearOS/Libraries
+Source: app-mail-%{version}.tar.gz
+Buildarch: noarch
+
+%description
+The Mail app is a very simple library that handles core mail parameters for other mail apps.
+
+%package core
+Summary: Mail Library - Core
 Requires: app-base-core
-Requires: app-accounts
 Requires: app-network-core
-Requires: app-smtp-core >= 1:1.1.3
 Requires: app-openldap-core => 1:1.1.4
 
 %description core
-The Mail Settings app provides the necessary tools to manage core mail functionality.
+The Mail app is a very simple library that handles core mail parameters for other mail apps.
 
 This package provides the core API and libraries.
 
@@ -39,9 +32,6 @@ mkdir -p -m 755 %{buildroot}/usr/clearos/apps/mail
 cp -r * %{buildroot}/usr/clearos/apps/mail/
 
 
-%post
-logger -p local6.notice -t installer 'app-mail - installing'
-
 %post core
 logger -p local6.notice -t installer 'app-mail-core - installing'
 
@@ -53,11 +43,6 @@ fi
 
 exit 0
 
-%preun
-if [ $1 -eq 0 ]; then
-    logger -p local6.notice -t installer 'app-mail - uninstalling'
-fi
-
 %preun core
 if [ $1 -eq 0 ]; then
     logger -p local6.notice -t installer 'app-mail-core - uninstalling'
@@ -66,12 +51,10 @@ fi
 
 exit 0
 
-%files
-%defattr(-,root,root)
-
 %files core
 %defattr(-,root,root)
 %exclude /usr/clearos/apps/mail/packaging
+%exclude /usr/clearos/apps/mail/tests
 %dir /usr/clearos/apps/mail
 /usr/clearos/apps/mail/deploy
 /usr/clearos/apps/mail/language
