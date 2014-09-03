@@ -1,7 +1,7 @@
 
 Name: app-mail
 Epoch: 1
-Version: 1.5.5
+Version: 1.6.5
 Release: 1%{dist}
 Summary: Mail Library - Core
 License: LGPLv3
@@ -54,7 +54,6 @@ exit 0
 %files core
 %defattr(-,root,root)
 %exclude /usr/clearos/apps/mail/packaging
-%exclude /usr/clearos/apps/mail/tests
 %dir /usr/clearos/apps/mail
 /usr/clearos/apps/mail/deploy
 /usr/clearos/apps/mail/language
