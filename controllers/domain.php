@@ -103,14 +103,14 @@ class Domain extends ClearOS_Controller
         $this->load->module('accounts/status');
 
         if ($this->status->unhappy()) {
-            $this->status->widget('mail_settings');
+            $this->status->widget('mail');
             return;
         }
 
         // Load dependencies
         //------------------
 
-        $this->lang->load('mail_settings');
+        $this->lang->load('mail');
         $this->load->library('mail/Base_Mail');
 
         // Set validation rules
@@ -127,7 +127,7 @@ class Domain extends ClearOS_Controller
                 $this->base_mail->set_domain($this->input->post('domain'));
 
                 $this->page->set_status_updated();
-                redirect('/mail_settings/domain');
+                redirect('/mail/domain');
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;
@@ -148,6 +148,6 @@ class Domain extends ClearOS_Controller
         // Load views
         //-----------
 
-        $this->page->view_form('domain', $data, lang('mail_settings_network_settings'));
+        $this->page->view_form('domain', $data, lang('mail_network_settings'));
     }
 }

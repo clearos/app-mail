@@ -4,12 +4,12 @@
  * Mail domain view.
  *
  * @category   apps
- * @package    mail-settings
+ * @package    mail
  * @subpackage views
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2012 ClearFoundation
+ * @copyright  2012-2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
- * @link       http://www.clearfoundation.com/docs/developer/apps/mail_settings/
+ * @link       http://www.clearfoundation.com/docs/developer/apps/mail/
  */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 $this->lang->load('network');
-$this->lang->load('mail_settings');
 $this->lang->load('mail');
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,12 +44,12 @@ if ($form_type === 'edit') {
     $read_only = FALSE;
     $buttons = array(
         form_submit_update('submit'),
-        anchor_cancel('/app/mail_settings/domain'),
+        anchor_cancel('/app/mail/domain'),
     );
 } else {
     $read_only = TRUE;
     $buttons = array(
-        anchor_edit('/app/mail_settings/domain/edit')
+        anchor_edit('/app/mail/domain/edit')
     );
 }
 
@@ -58,8 +57,8 @@ if ($form_type === 'edit') {
 // Form
 ///////////////////////////////////////////////////////////////////////////////
 
-echo form_open('mail_settings/domain/edit');
-echo form_header(lang('mail_settings_network_settings'));
+echo form_open('mail/domain/edit');
+echo form_header(lang('mail_network_settings'));
 
 echo field_input('domain', $domain, lang('mail_mail_domain'), $read_only);
 
