@@ -21,12 +21,22 @@ $app['name'] = lang('mail_app_name');
 $app['category'] = lang('base_category_system');
 $app['subcategory'] = lang('base_subcategory_settings');
 
+
+/////////////////////////////////////////////////////////////////////////////
+// Controllers
+/////////////////////////////////////////////////////////////////////////////
+
+$app['controllers']['mail']['title'] = $app['name'];
+$app['controllers']['domain']['title'] = lang('mail_domain');
+$app['controllers']['notification']['title'] = lang('mail_notification');
+
 /////////////////////////////////////////////////////////////////////////////
 // Packaging
 /////////////////////////////////////////////////////////////////////////////
 
 // FIXME:'app-openldap-core => 1:1.1.4 should be handled some other way... maybe
 $app['core_requires'] = array(
+    'app-mail-notification-core',
     'app-network-core',
     'app-openldap-core => 1:1.1.4',
 );

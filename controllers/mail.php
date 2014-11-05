@@ -63,7 +63,7 @@ class Mail extends ClearOS_Controller
         // Load views
         //-----------
 
-        $views = array('mail/domain');
+        $views = array('mail/domain', 'mail/notification');
 
         $this->page->view_forms($views, lang('mail_app_name'));
     }
