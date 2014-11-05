@@ -27,8 +27,8 @@ $app['subcategory'] = lang('base_subcategory_settings');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['controllers']['mail']['title'] = $app['name'];
-$app['controllers']['domain']['title'] = lang('mail_domain');
-$app['controllers']['notification']['title'] = lang('mail_notification');
+$app['controllers']['domain']['title'] = lang('mail_mail_domain');
+$app['controllers']['notification']['title'] = lang('mail_smtp_notification_settings');
 
 /////////////////////////////////////////////////////////////////////////////
 // Packaging

@@ -58,7 +58,7 @@ if ($form_type === 'edit') {
 ///////////////////////////////////////////////////////////////////////////////
 
 echo form_open('mail/domain/edit');
-echo form_header(lang('mail_network_settings'));
+echo form_header(lang('base_settings'));
 
 echo field_input('domain', $domain, lang('mail_mail_domain'), $read_only);
 
