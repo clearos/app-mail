@@ -81,6 +81,7 @@ clearos_load_library('openldap/LDAP_Driver');
 // Exceptions
 //-----------
 
+use \Exception as Exception;
 use \clearos\apps\base\Validation_Exception as Validation_Exception;
 
 clearos_load_library('base/Validation_Exception');
@@ -190,7 +191,12 @@ class Base_Mail extends Engine
             $group = Group::create($group_name);
 
             $group_info = array();
-            $group->update($group_info);
+
+            try {
+                $group->update($group_info);
+            } catch (Exception $e) {
+                // TODO: not all groups need/have this attribute
+            }
         }
 
         // FIXME: just temporary.  Postfix update
