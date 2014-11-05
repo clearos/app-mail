@@ -20,13 +20,10 @@ $app['description'] = lang('mail_app_description');
 $app['name'] = lang('mail_app_name');
 $app['category'] = lang('base_category_system');
 $app['subcategory'] = lang('base_subcategory_settings');
-$app['menu_enabled'] = FALSE;
 
 /////////////////////////////////////////////////////////////////////////////
 // Packaging
 /////////////////////////////////////////////////////////////////////////////
-
-$app['core_only'] = TRUE;
 
 // FIXME:'app-openldap-core => 1:1.1.4 should be handled some other way... maybe
 $app['core_requires'] = array(

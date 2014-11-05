@@ -1,7 +1,7 @@
 <?php
 
-$lang['mail_app_name'] = 'Mail Library';
-$lang['mail_app_description'] = 'The Mail app is a very simple library that handles core mail parameters for other mail apps.';
+$lang['mail_app_name'] = 'Mail Settings';
+$lang['mail_app_description'] = 'The mail app provides options for mail notification and simple outbound mail support.';
 $lang['mail_bounce'] = 'Bounce';
 $lang['mail_discard'] = 'Discard';
 $lang['mail_mail_domain'] = 'Mail Domain';

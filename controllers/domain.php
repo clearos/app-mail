@@ -148,6 +148,6 @@ class Domain extends ClearOS_Controller
         // Load views
         //-----------
 
-        $this->page->view_form('domain', $data, lang('mail_network_settings'));
+        $this->page->view_form('domain', $data, lang('mail_app_name'));
     }
 }
