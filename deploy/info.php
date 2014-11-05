@@ -27,7 +27,7 @@ $app['subcategory'] = lang('base_subcategory_settings');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['controllers']['mail']['title'] = $app['name'];
-$app['controllers']['domain']['title'] = lang('mail_mail_domain');
+$app['controllers']['settings']['title'] = lang('base_settings');
 $app['controllers']['notification']['title'] = lang('mail_smtp_notification_settings');
 
 /////////////////////////////////////////////////////////////////////////////
@@ -39,6 +39,7 @@ $app['core_requires'] = array(
     'app-mail-notification-core',
     'app-network-core',
     'app-openldap-core => 1:1.1.4',
+    'app-smtp-core',
 );
 
 $app['requires'] = array(

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mail domain view.
+ * Mail settings view.
  *
  * @category   apps
  * @package    mail
@@ -44,12 +44,12 @@ if ($form_type === 'edit') {
     $read_only = FALSE;
     $buttons = array(
         form_submit_update('submit'),
-        anchor_cancel('/app/mail/domain'),
+        anchor_cancel('/app/mail/settings'),
     );
 } else {
     $read_only = TRUE;
     $buttons = array(
-        anchor_edit('/app/mail/domain/edit')
+        anchor_edit('/app/mail/settings/edit')
     );
 }
 
@@ -57,10 +57,11 @@ if ($form_type === 'edit') {
 // Form
 ///////////////////////////////////////////////////////////////////////////////
 
-echo form_open('mail/domain/edit');
+echo form_open('mail/settings/edit');
 echo form_header(lang('base_settings'));
 
 echo field_input('domain', $domain, lang('mail_mail_domain'), $read_only);
+echo field_input('hostname', $hostname, lang('mail_mail_hostname'), $read_only);
 
 echo field_button_set($buttons);
 

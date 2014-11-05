@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mail domain controller.
+ * Mail settings controller.
  *
  * @category   apps
  * @package    mail
@@ -41,7 +41,7 @@ use \clearos\apps\accounts\Accounts_Engine as Accounts_Engine;
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * Mail domain controller.
+ * Mail settings controller.
  *
  * @category   apps
  * @package    mail
@@ -52,10 +52,10 @@ use \clearos\apps\accounts\Accounts_Engine as Accounts_Engine;
  * @link       http://www.clearfoundation.com/docs/developer/apps/mail/
  */
 
-class Domain extends ClearOS_Controller
+class Settings extends ClearOS_Controller
 {
     /**
-     * Mail domain settings controller.
+     * Mail settings settings controller.
      *
      * @return view
      */
@@ -117,6 +117,7 @@ class Domain extends ClearOS_Controller
         //---------------------
          
         $this->form_validation->set_policy('domain', 'mail/Base_Mail', 'validate_domain', TRUE);
+        $this->form_validation->set_policy('hostname', 'mail/Base_Mail', 'validate_hostname', TRUE);
         $form_ok = $this->form_validation->run();
 
         // Handle form submit
@@ -125,9 +126,11 @@ class Domain extends ClearOS_Controller
         if (($this->input->post('submit') && $form_ok)) {
             try {
                 $this->base_mail->set_domain($this->input->post('domain'));
+                $this->base_mail->set_hostname($this->input->post('hostname'));
+                $this->base_mail->reset();
 
                 $this->page->set_status_updated();
-                redirect('/mail/domain');
+                redirect('/mail/settings');
             } catch (Exception $e) {
                 $this->page->view_exception($e);
                 return;
@@ -140,6 +143,7 @@ class Domain extends ClearOS_Controller
         try {
             $data['form_type'] = $form_type;
             $data['domain'] = $this->base_mail->get_domain();
+            $data['hostname'] = $this->base_mail->get_hostname();
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
@@ -148,6 +152,6 @@ class Domain extends ClearOS_Controller
         // Load views
         //-----------
 
-        $this->page->view_form('domain', $data, lang('mail_app_name'));
+        $this->page->view_form('mail/settings', $data, lang('mail_app_name'));
     }
 }

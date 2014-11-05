@@ -72,11 +72,13 @@ use \clearos\apps\base\Engine as Engine;
 use \clearos\apps\groups\Group_Engine as Group_Engine;
 use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\openldap\LDAP_Driver as LDAP_Driver;
+use \clearos\apps\smtp\Postfix as Postfix;
 
 clearos_load_library('base/Engine');
 clearos_load_library('groups/Group_Engine');
 clearos_load_library('network/Network_Utils');
 clearos_load_library('openldap/LDAP_Driver');
+clearos_load_library('smtp/Postfix');
 
 // Exceptions
 //-----------
@@ -199,18 +201,51 @@ class Base_Mail extends Engine
             }
         }
 
-        // FIXME: just temporary.  Postfix update
-        if (clearos_app_installed('smtp')) {
-            clearos_load_library('smtp/Postfix');
-            $postfix = new \clearos\apps\smtp\Postfix();
-            $postfix->set_domain($domain);
-        }
+        // Update Postfix domain
+        //----------------------
+
+        $postfix = new Postfix();
+        $postfix->set_domain($domain);
+    }
+
+    /**
+     * Resets any processes that need a configuration reload.
+     *
+     * @return void
+     * @throws Validation_Exception, Engine_Exception
+     */
+
+    public function reset()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $postfix = new Postfix();
+        $postfix->reset(TRUE);
+    }
+
+    /**
+     * Sets base mail domain.
+     *
+     * @param string $domain domain
+     *
+     * @return void
+     * @throws Validation_Exception, Engine_Exception
+     */
+
+    public function set_hostname($hostname)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        Validation_Exception::is_valid($this->validate_hostname($hostname));
+
+        $postfix = new Postfix();
+        $postfix->set_hostname($hostname);
     }
 
     /**
      * Returns base mail domain.
      *
-     * @return string domain SID
+     * @return string mail domain
      * @throws Engine_Exception
      */
 
@@ -231,6 +266,23 @@ class Base_Mail extends Engine
         return $domain;
     }
 
+    /**
+     * Returns mail server hostname.
+     *
+     * @return string mail server hostname
+     * @throws Engine_Exception
+     */
+
+    public function get_hostname()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $postfix = new Postfix();
+        $hostname = $postfix->get_hostname();
+
+        return $hostname;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////
     // V A L I D A T I O N   R O U T I N E S
     ///////////////////////////////////////////////////////////////////////////////
@@ -248,7 +300,23 @@ class Base_Mail extends Engine
         clearos_profile(__METHOD__, __LINE__);
 
         if (! Network_Utils::is_valid_domain($domain))
-            return lang('mail_mail_domain_invalid');
+            return lang('network_domain_invalid');
+    }
+
+    /**
+     * Validation routine for hostname.
+     *
+     * @param string $hostname hostname
+     *
+     * @return string error message if hostname is invalid
+     */
+
+    public function validate_hostname($hostname)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (! Network_Utils::is_valid_hostname($hostname))
+            return lang('network_hostname_invalid');
     }
 
     ///////////////////////////////////////////////////////////////////////////////

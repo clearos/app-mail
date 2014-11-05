@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Mail settings controller.
+ * Mail notification settings.
  *
  * @category   apps
  * @package    mail
- * @subpackage controllers
+ * @subpackage views
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2012-2014 ClearFoundation
+ * @copyright  2011-2014 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
- * @link       http://www.clearfoundation.com/docs/developer/apps/mail/
+ * @link       http://www.clearcenter.com/support/documentation/clearos/mail/
  */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,46 +25,31 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+//  
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// C L A S S
+// Load dependencies
 ///////////////////////////////////////////////////////////////////////////////
 
-/**
- * Mail settings controller.
- *
- * @category   apps
- * @package    mail
- * @subpackage controllers
- * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2012-2014 ClearFoundation
- * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
- * @link       http://www.clearfoundation.com/docs/developer/apps/mail/
- */
+$this->lang->load('base');
+$this->lang->load('mail');
 
-class Mail extends ClearOS_Controller
-{
-    /**
-     * Mail settings summary view.
-     *
-     * @return view
-     */
+///////////////////////////////////////////////////////////////////////////////
+// Form open
+///////////////////////////////////////////////////////////////////////////////
 
-    function index()
-    {
-        // Load libraries
-        //---------------
+echo form_open('mail/notification/test');
+echo form_header(lang('mail_notification_test'));
 
-        $this->lang->load('mail');
+echo field_input('email', $email, lang('mail_send_to'), FALSE);
+echo field_button_set(
+    array(
+        form_submit_custom('submit', lang('mail_send_now'), 'high'),
+        anchor_cancel('/app/mail/notification')
+    )
+);
 
-        // Load views
-        //-----------
-
-        $views = array('mail/settings', 'mail/notification');
-
-        $this->page->view_forms($views, lang('mail_app_name'));
-    }
-}
+echo form_footer();
+echo form_close();
