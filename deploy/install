@@ -1,13 +1,17 @@
 #!/bin/sh
 
-[ -x /etc/rc.d/init.d/slapd ] && /sbin/service slapd condrestart >/dev/null 2>&1
+# Start Postfix
+#--------------
+
+logger -p local6.notice -t installer "app-mail-notification-core - enabling outbound mail system"
+chkconfig postfix on >/dev/null 2>&1
+
+logger -p local6.notice -t installer "app-mail-notification-core - starting outbound mail system"
+service postfix start >/dev/null 2>&1
 
 # Initialize domain name with default
 #------------------------------------
 
 /usr/clearos/apps/mail/deploy/initialize >/dev/null 2>&1
-
-# FIXME: need to pull in LDAP schema change
-/sbin/service slapd condrestart >/dev/null 2>&1
 
 exit 0

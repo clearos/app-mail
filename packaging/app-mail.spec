@@ -1,7 +1,7 @@
 
 Name: app-mail
 Epoch: 1
-Version: 2.0.5
+Version: 2.0.11
 Release: 1%{dist}
 Summary: Mail Settings
 License: GPLv3
@@ -24,6 +24,7 @@ Requires: app-mail-notification-core
 Requires: app-network-core
 Requires: app-openldap-core => 1:1.1.4
 Requires: app-smtp-core
+Requires: postfix
 
 %description core
 The mail app provides options for mail notification and simple outbound mail support.
