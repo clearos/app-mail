@@ -60,7 +60,8 @@ if ($form_type === 'edit') {
 echo form_open('mail/settings/edit');
 echo form_header(lang('base_settings'));
 
-echo field_input('domain', $domain, lang('mail_mail_domain'), $read_only);
+if ($show_domain)
+    echo field_input('domain', $domain, lang('mail_mail_domain'), $read_only);
 echo field_input('hostname', $hostname, lang('mail_mail_hostname'), $read_only);
 
 echo field_button_set($buttons);

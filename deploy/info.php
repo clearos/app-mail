@@ -34,7 +34,6 @@ $app['controllers']['notification']['title'] = lang('mail_smtp_notification_sett
 // Packaging
 /////////////////////////////////////////////////////////////////////////////
 
-// FIXME:'app-openldap-core => 1:1.1.4 should be handled some other way... maybe
 $app['core_requires'] = array(
     'app-mail-notification-core',
     'app-network-core',

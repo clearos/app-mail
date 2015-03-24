@@ -30,13 +30,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// D E P E N D E N C I E S
-///////////////////////////////////////////////////////////////////////////////
-
-use \clearos\apps\accounts\Accounts_Driver_Not_Set_Exception as Accounts_Driver_Not_Set_Exception;
-use \clearos\apps\accounts\Accounts_Engine as Accounts_Engine;
-
-///////////////////////////////////////////////////////////////////////////////
 // C L A S S
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -97,15 +90,16 @@ class Settings extends ClearOS_Controller
 
     function _common($form_type)
     {
-        // Show account status widget if we're not in a happy state
-        //---------------------------------------------------------
+        // Nothing to show if accounts system is not running
+        //---------------------------------------------------
 
+/*
         $this->load->module('accounts/status');
 
         if ($this->status->unhappy()) {
-            $this->status->widget('mail');
             return;
         }
+*/
 
         // Load dependencies
         //------------------
@@ -113,10 +107,14 @@ class Settings extends ClearOS_Controller
         $this->lang->load('mail');
         $this->load->library('mail/Base_Mail');
 
+        $directory_ready = $this->base_mail->is_directory_ready();
+
         // Set validation rules
         //---------------------
          
-        $this->form_validation->set_policy('domain', 'mail/Base_Mail', 'validate_domain', TRUE);
+        if ($directory_ready)
+            $this->form_validation->set_policy('domain', 'mail/Base_Mail', 'validate_domain', TRUE);
+
         $this->form_validation->set_policy('hostname', 'mail/Base_Mail', 'validate_hostname', TRUE);
         $form_ok = $this->form_validation->run();
 
@@ -125,7 +123,9 @@ class Settings extends ClearOS_Controller
 
         if (($this->input->post('submit') && $form_ok)) {
             try {
-                $this->base_mail->set_domain($this->input->post('domain'));
+                if ($directory_ready)
+                    $this->base_mail->set_domain($this->input->post('domain'));
+
                 $this->base_mail->set_hostname($this->input->post('hostname'));
                 $this->base_mail->reset();
 
@@ -142,7 +142,13 @@ class Settings extends ClearOS_Controller
 
         try {
             $data['form_type'] = $form_type;
-            $data['domain'] = $this->base_mail->get_domain();
+            if ($directory_ready) {
+                $data['domain'] = $this->base_mail->get_domain();
+                $data['show_domain'] = TRUE;
+            } else {
+                $data['domain'] = '';
+                $data['show_domain'] = FALSE;
+            }
             $data['hostname'] = $this->base_mail->get_hostname();
         } catch (Exception $e) {
             $this->page->view_exception($e);

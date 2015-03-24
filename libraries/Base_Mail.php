@@ -52,30 +52,17 @@ clearos_load_language('mail');
 // D E P E N D E N C I E S
 ///////////////////////////////////////////////////////////////////////////////
 
-// Factories
-//----------
-
-use \clearos\apps\groups\Group_Factory as Group;
-use \clearos\apps\groups\Group_Manager_Factory as Group_Manager;
-use \clearos\apps\users\User_Factory as User;
-use \clearos\apps\users\User_Manager_Factory as User_Manager;
-
-clearos_load_library('groups/Group_Factory');
-clearos_load_library('groups/Group_Manager_Factory');
-clearos_load_library('users/User_Factory');
-clearos_load_library('users/User_Manager_Factory');
-
 // Classes
 //--------
 
 use \clearos\apps\base\Engine as Engine;
-use \clearos\apps\groups\Group_Engine as Group_Engine;
+use \clearos\apps\ldap\LDAP_Engine as LDAP_Engine;
 use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\openldap\LDAP_Driver as LDAP_Driver;
 use \clearos\apps\smtp\Postfix as Postfix;
 
 clearos_load_library('base/Engine');
-clearos_load_library('groups/Group_Engine');
+clearos_load_library('ldap/LDAP_Engine');
 clearos_load_library('network/Network_Utils');
 clearos_load_library('openldap/LDAP_Driver');
 clearos_load_library('smtp/Postfix');
@@ -83,7 +70,6 @@ clearos_load_library('smtp/Postfix');
 // Exceptions
 //-----------
 
-use \Exception as Exception;
 use \clearos\apps\base\Validation_Exception as Validation_Exception;
 
 clearos_load_library('base/Validation_Exception');
@@ -142,11 +128,11 @@ class Base_Mail extends Engine
 
         Validation_Exception::is_valid($this->validate_domain($domain));
 
-        if ($this->ldaph == NULL)
-            $this->_get_ldap_handle();
-
         // Set domain in master node object
         //---------------------------------
+
+        if ($this->ldaph == NULL)
+            $this->_get_ldap_handle();
 
         $ldap_object['objectClass'] = array(
             'top',
@@ -163,49 +149,21 @@ class Base_Mail extends Engine
         if ($this->ldaph->exists($dn))
             $this->ldaph->modify($dn, $ldap_object);
 
-        // Set domain for user and group mail attributes
-        //----------------------------------------------
-        // This is a bit non-intuitive.  The mail attribute is updated
-        // by the mail extension.  To retrigger the extension so that it
-        // updates the mail attribute, we update every user and group.
-
-        // TODO: scaling issues for large number of users
-
-        $user_manager = User_Manager::create();
-        $users = $user_manager->get_list();
-
-        foreach ($users as $username) {
-            $user = User::create($username);
-
-            $user_info = array();
-            $user->update($user_info);
-        }
-
-        $group_manager = Group_Manager::create();
-
-        $normal_groups = $group_manager->get_list(Group_Engine::FILTER_NORMAL);
-        $windows_groups = $group_manager->get_list(Group_Engine::FILTER_WINDOWS);
-        $builtin_groups = $group_manager->get_list(Group_Engine::FILTER_BUILTIN);
-
-        $groups = array_merge($normal_groups, $windows_groups, $builtin_groups);
-
-        foreach ($groups as $group_name) {
-            $group = Group::create($group_name);
-
-            $group_info = array();
-
-            try {
-                $group->update($group_info);
-            } catch (Exception $e) {
-                // TODO: not all groups need/have this attribute
-            }
-        }
-
         // Update Postfix domain
         //----------------------
 
         $postfix = new Postfix();
         $postfix->set_domain($domain);
+
+        // Set domain for user and group mail attributes
+        //----------------------------------------------
+
+        if (clearos_library_installed('mail_extension/Mail_Domain')) {
+            clearos_load_library('mail_extension/Mail_Domain');
+
+            $mail_domain = new \clearos\apps\mail_extension\Mail_Domain();
+            $mail_domain->set_domain($domain);
+        }
     }
 
     /**
@@ -240,6 +198,25 @@ class Base_Mail extends Engine
 
         $postfix = new Postfix();
         $postfix->set_hostname($hostname);
+    }
+
+    /**
+     * Returns directory status.
+     *
+     * @return boolean TRUE if directory is ready
+     * @throws Engine_Exception
+     */
+
+    public function is_directory_ready()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $ldap_driver = new LDAP_Driver();
+
+        if ($ldap_driver->get_system_status() == LDAP_Engine::STATUS_ONLINE)
+            return TRUE;
+        else
+            return FALSE;
     }
 
     /**
