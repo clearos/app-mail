@@ -57,12 +57,14 @@ clearos_load_language('mail');
 
 use \clearos\apps\base\Engine as Engine;
 use \clearos\apps\ldap\LDAP_Engine as LDAP_Engine;
+use \clearos\apps\network\Domain as Domain;
 use \clearos\apps\network\Network_Utils as Network_Utils;
 use \clearos\apps\openldap\LDAP_Driver as LDAP_Driver;
 use \clearos\apps\smtp\Postfix as Postfix;
 
 clearos_load_library('base/Engine');
 clearos_load_library('ldap/LDAP_Engine');
+clearos_load_library('network/Domain');
 clearos_load_library('network/Network_Utils');
 clearos_load_library('openldap/LDAP_Driver');
 clearos_load_library('smtp/Postfix');
@@ -111,6 +113,28 @@ class Base_Mail extends Engine
     public function __construct()
     {
         clearos_profile(__METHOD__, __LINE__);
+    }
+
+    /**
+     * Auto-configures default mail domain.
+     *
+     * @return void
+     * @throws Validation_Exception, Engine_Exception
+     */
+
+    public function auto_configure()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $current_domain = $this->get_domain();
+
+        if (empty($current_domain)) {
+            $domain = new Domain();
+            $default_domain = $domain->get_default();
+
+            if (!empty($default_domain))
+                $this->set_domain($default_domain);
+        }
     }
 
     /**

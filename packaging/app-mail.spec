@@ -1,7 +1,7 @@
 
 Name: app-mail
 Epoch: 1
-Version: 2.0.20
+Version: 2.0.21
 Release: 1%{dist}
 Summary: Mail Settings
 License: GPLv3
@@ -39,6 +39,7 @@ This package provides the core API and libraries.
 mkdir -p -m 755 %{buildroot}/usr/clearos/apps/mail
 cp -r * %{buildroot}/usr/clearos/apps/mail/
 
+install -D -m 0755 packaging/openldap-online-event %{buildroot}/var/clearos/events/openldap_online/mail
 
 %post
 logger -p local6.notice -t installer 'app-mail - installing'
@@ -80,3 +81,4 @@ exit 0
 /usr/clearos/apps/mail/deploy
 /usr/clearos/apps/mail/language
 /usr/clearos/apps/mail/libraries
+/var/clearos/events/openldap_online/mail

@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'mail';
-$app['version'] = '2.0.20';
+$app['version'] = '2.0.21';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -40,6 +40,13 @@ $app['core_requires'] = array(
     'app-openldap-core => 1:1.1.4',
     'app-smtp-core',
     'postfix',
+);
+
+$app['core_file_manifest'] = array(
+    'openldap-online-event'=> array(
+        'target' => '/var/clearos/events/openldap_online/mail',
+        'mode' => '0755'
+    ),
 );
 
 $app['requires'] = array(
