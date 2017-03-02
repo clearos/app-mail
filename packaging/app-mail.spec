@@ -1,7 +1,7 @@
 
 Name: app-mail
 Epoch: 1
-Version: 2.3.20
+Version: 2.3.22
 Release: 1%{dist}
 Summary: Mail Settings
 License: GPLv3
