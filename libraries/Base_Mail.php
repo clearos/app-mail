@@ -199,7 +199,7 @@ class Base_Mail extends Engine
     /**
      * Sets base mail domain.
      *
-     * @param string $domain domain
+     * @param string $hostname hostname
      *
      * @return void
      * @throws Validation_Exception, Engine_Exception
@@ -320,12 +320,6 @@ class Base_Mail extends Engine
     ///////////////////////////////////////////////////////////////////////////////
     // P R I V A T E   M E T H O D S
     ///////////////////////////////////////////////////////////////////////////////
-
-    protected function _get_ldap_handle()
-    {
-        clearos_profile(__METHOD__, __LINE__);
-
-    }
 
     /**
      * Loads configuration files.
