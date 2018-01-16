@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'mail';
-$app['version'] = '2.3.22';
+$app['version'] = '2.4.0';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -37,7 +37,6 @@ $app['controllers']['notification']['title'] = lang('mail_smtp_notification_sett
 $app['core_requires'] = array(
     'app-mail-notification-core',
     'app-network-core',
-    'app-openldap-core => 1:1.1.4',
     'app-smtp-core',
     'postfix',
 );

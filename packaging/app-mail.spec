@@ -1,7 +1,7 @@
 
 Name: app-mail
 Epoch: 1
-Version: 2.3.22
+Version: 2.4.0
 Release: 1%{dist}
 Summary: Mail Settings
 License: GPLv3
@@ -22,7 +22,6 @@ Group: ClearOS/Libraries
 Requires: app-base-core
 Requires: app-mail-notification-core
 Requires: app-network-core
-Requires: app-openldap-core => 1:1.1.4
 Requires: app-smtp-core
 Requires: postfix
 

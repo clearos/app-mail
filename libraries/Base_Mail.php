@@ -7,7 +7,7 @@
  * @package    mail
  * @subpackage libraries
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2012 ClearFoundation
+ * @copyright  2012-2018 ClearFoundation
  * @license    http://www.gnu.org/copyleft/lgpl.html GNU Lesser General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/mail/
  */
@@ -55,25 +55,27 @@ clearos_load_language('mail');
 // Classes
 //--------
 
+use \clearos\apps\base\Configuration_File as Configuration_File;
 use \clearos\apps\base\Engine as Engine;
-use \clearos\apps\ldap\LDAP_Engine as LDAP_Engine;
+use \clearos\apps\base\File as File;
 use \clearos\apps\network\Domain as Domain;
 use \clearos\apps\network\Network_Utils as Network_Utils;
-use \clearos\apps\openldap\LDAP_Driver as LDAP_Driver;
 use \clearos\apps\smtp\Postfix as Postfix;
 
+clearos_load_library('base/Configuration_File');
 clearos_load_library('base/Engine');
-clearos_load_library('ldap/LDAP_Engine');
+clearos_load_library('base/File');
 clearos_load_library('network/Domain');
 clearos_load_library('network/Network_Utils');
-clearos_load_library('openldap/LDAP_Driver');
 clearos_load_library('smtp/Postfix');
 
 // Exceptions
 //-----------
 
+use \clearos\apps\base\File_Not_Found_Exception as File_Not_Found_Exception;
 use \clearos\apps\base\Validation_Exception as Validation_Exception;
 
+clearos_load_library('base/File_Not_Found_Exception');
 clearos_load_library('base/Validation_Exception');
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,7 +89,7 @@ clearos_load_library('base/Validation_Exception');
  * @package    mail
  * @subpackage libraries
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2012 ClearFoundation
+ * @copyright  2012-2018 ClearFoundation
  * @license    http://www.gnu.org/copyleft/lgpl.html GNU Lesser General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/mail/
  */
@@ -95,10 +97,17 @@ clearos_load_library('base/Validation_Exception');
 class Base_Mail extends Engine
 {
     ///////////////////////////////////////////////////////////////////////////////
+    // C O N S T A N T S
+    ///////////////////////////////////////////////////////////////////////////////
+
+    const APP_CONFIG = '/etc/clearos/mail.conf';
+
+    ///////////////////////////////////////////////////////////////////////////////
     // V A R I A B L E S
     ///////////////////////////////////////////////////////////////////////////////
 
-    protected $ldaph = NULL;
+    protected $config = array();
+    protected $is_loaded = FALSE;
 
     ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
@@ -152,26 +161,10 @@ class Base_Mail extends Engine
 
         Validation_Exception::is_valid($this->validate_domain($domain));
 
-        // Set domain in master node object
-        //---------------------------------
+        // Update mail domain
+        //-------------------
 
-        if ($this->ldaph == NULL)
-            $this->_get_ldap_handle();
-
-        $ldap_object['objectClass'] = array(
-            'top',
-            'account',
-            'posixAccount',
-            'clearMasterNode'
-        );
-
-        $ldap_object['clearMasterMailDomain'] = $domain;
-
-        $ldap_driver = new LDAP_Driver();
-        $dn = $ldap_driver->get_master_dn();
-
-        if ($this->ldaph->exists($dn))
-            $this->ldaph->modify($dn, $ldap_object);
+        $this->_set_parameter('domain', $domain);
 
         // Update Postfix domain
         //----------------------
@@ -182,9 +175,7 @@ class Base_Mail extends Engine
         // Set domain for user and group mail attributes
         //----------------------------------------------
 
-        if (clearos_library_installed('mail_extension/Mail_Domain')) {
-            clearos_load_library('mail_extension/Mail_Domain');
-
+        if (clearos_load_library('mail_extension/Mail_Domain')) {
             $mail_domain = new \clearos\apps\mail_extension\Mail_Domain();
             $mail_domain->set_domain($domain);
         }
@@ -225,22 +216,31 @@ class Base_Mail extends Engine
     }
 
     /**
-     * Returns directory status.
+     * Returns base mail domain.
      *
-     * @return boolean TRUE if directory is ready
+     * @return string mail domain
      * @throws Engine_Exception
      */
 
-    public function is_directory_ready()
+    public function convert_domain()
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $ldap_driver = new LDAP_Driver();
+        if (!clearos_load_library('openldap/LDAP_Driver'))
+            return;
 
-        if ($ldap_driver->get_system_status() == LDAP_Engine::STATUS_ONLINE)
-            return TRUE;
-        else
-            return FALSE;
+        $ldap = new \clearos\apps\openldap\LDAP_Driver();
+        $ldaph = $ldap->get_ldap_handle();
+        $dn = $ldap->get_master_dn();
+        
+        $attributes = $ldaph->read($dn);
+
+        $domain = empty($attributes['clearMasterMailDomain'][0]) ? '' : $attributes['clearMasterMailDomain'][0];
+
+        if (!empty($domain))
+            $this->set_domain($domain);
+
+        return $domain;
     }
 
     /**
@@ -254,15 +254,12 @@ class Base_Mail extends Engine
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if ($this->ldaph === NULL)
-            $this->_get_ldap_handle();
+        $this->_load_config();
 
-        $ldap_driver = new LDAP_Driver();
-        $dn = $ldap_driver->get_master_dn();
-        
-        $attributes = $this->ldaph->read($dn);
+        $domain = (empty($this->config['domain'])) ? '' : $this->config['domain'];
 
-        $domain = empty($attributes['clearMasterMailDomain'][0]) ? '' : $attributes['clearMasterMailDomain'][0];
+        if (empty($domain))
+            $domain = $this->convert_domain();
 
         return $domain;
     }
@@ -324,20 +321,59 @@ class Base_Mail extends Engine
     // P R I V A T E   M E T H O D S
     ///////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Creates an LDAP handle.
-     *
-     * @access private
-     *
-     * @return void
-     * @throws Engine_Exception
-     */
-
     protected function _get_ldap_handle()
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $ldap = new LDAP_Driver();
-        $this->ldaph = $ldap->get_ldap_handle();
+    }
+
+    /**
+     * Loads configuration files.
+     *
+     * @access private
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    protected function _load_config()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        try {
+            $config_file = new Configuration_File(self::APP_CONFIG);
+            $this->config = $config_file->load();
+        } catch (File_Not_Found_Exception $e) {
+            // Not fatal
+        }
+
+        $this->is_loaded = TRUE;
+    }
+
+    /**
+     * Sets a parameter in the config file.
+     *
+     * @param string $key   name of the key in the config file
+     * @param string $value value for the key
+     *
+     * @access private
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    protected function _set_parameter($key, $value)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $this->is_loaded = FALSE;
+
+        $file = new File(self::APP_CONFIG);
+
+        if (! $file->exists())
+            $file->create("root", "root", "0644");
+
+        $match = $file->replace_lines("/^$key\s*=\s*/", "$key = $value\n");
+
+        if (!$match)
+            $file->add_lines("$key = $value\n");
     }
 }
